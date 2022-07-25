@@ -1,0 +1,6 @@
+[lb]
+polb-qa-bs-01-old-mgt.lb.server.lan ansible_host=polb-qa-bs-01-old-mgt.lb.server.lan ansible_user=apiuser private_ip=polb-qa-bs-01-old-mgt.lb.server.lan ansible_ssh_pass=aTUa5WWvYD4tKXqttHq3
+
+
+[lbv3]
+polb-qa-bs-01-old-mgt.lb.server.lan

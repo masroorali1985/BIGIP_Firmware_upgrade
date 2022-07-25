@@ -1,0 +1,23 @@
+---
+partition_list:
+- Common
+- Service
+# - dn-in
+
+
+
+
+
+
+
+
+# wrong partition name will fail the playbook task
+#example: define partition as below.
+
+
+# ---
+# partition_list:
+# - Common
+# - Service
+# - dn-in
+

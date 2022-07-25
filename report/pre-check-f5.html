@@ -1,0 +1,104 @@
+  
+<!DOCTYPE html>
+<html>
+<body>
+<head>
+
+<style>
+
+  <!-- CSS styling for our HTML report -->
+  table.paleBlueRows {
+  font-family: "Times New Roman", Times, serif;
+  border: 1px solid #FFFFFF;
+  width: 350px;
+  height: 200px;
+  text-align: center;
+  border-collapse: collapse;
+}
+table.paleBlueRows td, table.paleBlueRows th {
+  border: 1px solid #FFFFFF;
+  padding: 3px 2px;
+}
+table.paleBlueRows tbody td {
+  font-size: 13px;
+}
+table.paleBlueRows tr:nth-child(even) {
+  background: #D0E4F5;
+}
+table.paleBlueRows thead {
+  background: #0B6FA4;
+  border-bottom: 5px solid #FFFFFF;
+}
+table.paleBlueRows thead th {
+  font-size: 17px;
+  font-weight: bold;
+  color: #FFFFFF;
+  text-align: center;
+  border-left: 2px solid #FFFFFF;
+}
+table.paleBlueRows thead th:first-child {
+  border-left: none;
+}
+
+table.paleBlueRows tfoot {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333333;
+  background: #D0E4F5;
+  border-top: 3px solid #444444;
+}
+table.paleBlueRows tfoot td {
+  font-size: 14px;
+}</style>
+<title>F5 Status Report</title>
+
+</head>
+<center>F5 Status Pre Reporter</center>
+<br>
+<br>
+<table class="paleBlueRows">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Full Path</th>
+            <th>VIP IP</th>
+            <th>Destination_Port</th>
+            <th>Protocol</th>
+            <th>Pool</th>
+            <th>Persistance</th>
+            <th>Status Reason</th>
+        </tr>
+    </thead>
+    <tbody>
+                <tr class='offline'>
+            <td>test_vs</td>
+            <td>offline</td>
+            <td>/Common/test_vs</td>
+            <td>192.168.1.254</td>
+            <td>0</td>
+            <td>tcp</td>
+            <td>/Common/testpool</td>
+            <td></td>
+            <td>The children pool member(s) are down</td>
+            
+        </tr>
+                <tr class='offline'>
+            <td>Service_Test</td>
+            <td>offline</td>
+            <td>/Service/Service_Test</td>
+            <td>195.20.225.193</td>
+            <td>0</td>
+            <td>tcp</td>
+            <td>/Common/testpool</td>
+            <td></td>
+            <td>The children pool member(s) are down</td>
+            
+        </tr>
+            </tbody>
+</table>
+
+<br>
+<br>
+<br>
+<br>

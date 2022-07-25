@@ -1,0 +1,147 @@
+---
+- name: F5 BIG-IPS 
+  hosts: lb
+  gather_facts: False
+
+  vars:
+    cancelprecheck: false #F5 precheck 
+
+    provider:
+      password: "{{ ansible_ssh_pass }}"
+      server: "{{ ansible_host }}"
+      user: "{{ ansible_user }}"
+      validate_certs: False
+  
+  tasks:
+
+    - name: Get failover state    #tested
+      shell: tmsh show sys failover | awk '{print $2}'s
+      register: failover_state
+    - debug:
+        var: failover_state.stdout
+    
+    - block:
+
+      - name: Verify running configuration of the BIG-IP
+        command: tmsh load sys config verify
+        register: verify_config
+      - debug:
+          var: verify_config.stdout    
+
+      - name: Get current time on BIG-IP  #tested
+        command: date "+%H%M%S-%m%d%y"
+        delegate_to: localhost
+        register: date
+      - debug:
+          var: date.stdout
+
+      - name: Download a new UCS
+        bigip_ucs_fetch:
+          src: "{{ inventory_hostname + '-' + date.stdout +  '-backup.ucs' }}"
+          dest: "{{ 'files/' + inventory_hostname + '-' + date.stdout +  '-backup.ucs' }}"
+          provider: "{{ provider }}"
+        delegate_to: localhost
+
+      - name: Fetch a qkview from the remote device
+        bigip_qkview:
+          exclude:
+            - secure
+          dest: "{{ 'files/' + inventory_hostname + '-' + date.stdout + '.qkview' }}"
+          provider: "{{ provider }}"
+        delegate_to: localhost
+
+      - name: Grab the Virtual Server Status  #tested
+        bigip_device_facts:
+          gather_subset:
+          - virtual-servers
+          partition: "{{ item }}"
+          provider: "{{provider}}"
+        delegate_to: localhost
+        register: bigip_facts              
+        loop: "{{ partition_list }}"            
+
+      - name: Capture the Virtual Server stats in a .json file
+        delegate_to: localhost
+        set_fact:
+          result: "{{bigip_facts | json_query(query_string)}}"
+        vars:
+          query_string: "results[].virtual_servers[].{Name: name, Status: availability_status,Full_Path: full_path,Destination: destination_address,Destination_Port: destination_port, Protocol: protocol,Pool: default_pool,Persistance: persistence_profile, Status_Reason: status_reason }"
+      - local_action:
+          module: copy
+          content: "{{ result }}"
+          dest: "outputs/pre-{{ansible_host}}-virtual-servers-outputs-{{date.stdout}}.json"
+
+      - name: Generate F5 Virtual Server Status .html Page
+        template:
+          src: ./report/templates/report.j2
+          dest: ./report/pre-check-f5.html
+        run_once: true
+        delegate_to: localhost
+
+      # - name: Reactivate BIG-IP with existing reg key
+      #   shell: SOAPLicenseClient --basekey $(perl -ane 'print $F[3] if /^Registration Key/' /config/bigip.license)
+
+      # - name: Wait for configuration to finish loading
+      #   wait_for:
+      #     timeout: 45
+      #   delegate_to: localhost
+
+      - name: Upload image to the BIG-IP
+        command: "rsync --progress --verbose f5teg@po-repo-f5.poinfra.server.lan::f5images/{{image}} /shared/images/"
+        register: image_verification
+      - debug:
+          var: image_verification.stdout
+
+      # - name: Verify image checksum
+      #   command: "md5sum --check {{image}}.md5"
+      #   register: image_checksum
+      # - debug:
+      #     var: image_checksum.stdout
+
+      - name: Get available volume number to use
+        script: files/get_vol_number.bash
+        register: vol
+      - debug:
+          var: vol.stdout
+
+      - name: Install BIG-IP software
+        bigip_software_install:
+          image: "{{ image }}"
+          state: activated
+          volume: "{{ vol.stdout }}"
+          provider: "{{ provider }}"
+        delegate_to: localhost
+      #   # async: 45
+      #   # poll: 0
+      #   # when: failover_state.stdout  == 'standby'
+
+      - name: Post-Check 1 Grab the Virtual Server Status
+        bigip_device_facts:
+          gather_subset:
+          - virtual-servers
+          partition: "{{ item }}"
+          provider: "{{provider}}"
+        delegate_to: localhost  
+        register: bigip_facts_post             
+        loop: "{{ partition_list }}"            
+
+      - name: Post-Check 2 Capture the Virtual Server stats in a .json file
+        delegate_to: localhost
+        set_fact:
+          resultpost: "{{bigip_facts_post | json_query(query_string) }}"
+        vars:
+          query_string: "results[].virtual_servers[].{Name: name, Status: availability_status,Full_Path: full_path,Destination: destination_address,Destination_Port: destination_port, Protocol: protocol,Pool: default_pool,Persistance: persistence_profile, Status_Reason: status_reason }"
+      - local_action:
+          module: copy
+          content: "{{ resultpost }}"
+          dest: "outputs/post-{{ansible_host}}-virtual-servers-outputs-{{date.stdout}}.json"
+
+      - name: Post-Check 3 Generate F5 Virtual Server Status .html Page
+        template:
+          src: ./report/templates/postreport.j2
+          dest: ./report/post-check-f5.html
+        delegate_to: localhost
+        run_once: true
+
+      # when: failover_state.stdout  == 'active'
+
