@@ -33,7 +33,7 @@ Clone the following plabook or just copy and paste it.
 
 To excute playbook run the following command 
 ```
-ansible-playbook -i inventory/hosts upgrade_bigip_v4.yaml
+ansible-playbook -i inventory/hosts upgrade_bigip_v4.yml
 ```
 
 ## Notes
