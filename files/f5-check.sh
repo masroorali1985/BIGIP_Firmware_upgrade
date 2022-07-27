@@ -89,7 +89,7 @@ epoch=$(date +%s)
       curl -kI https://$bigip/mgmt/tm/ 2>/dev/null | egrep -q "F5 Authorization Required"
         [ $? -ne 0 ] && echo -e "\n  Error: BIG-IP iControl REST API not accessible via \"https://$bigip/mgmt/tm/\"!\n" && exit 5
         [ $# -eq 2 ] && echo -e "Password: \c" && read -s password && echo
-      token=$(curl -k https://$bigip/mgmt/shared/authn/login -d "{ "username":"$username","password":"$password","loginProviderName":"tmos" }" 2>/dev/null | jq -r .token.token)
+      token=$(curl -k https://$bigip/mgmt/shared/authn/login -d "{ "username":"$username","password":"\"$password"\","loginProviderName":"tmos" }" 2>/dev/null | jq -r .token.token)
         [ ! "$token" -o "$token" == "null" ] && echo -e "\n  Error: Could not obtain token from \"https://$bigip/mgmt/shared/authn/login\" for user \"$username\"!\n" && exit 6
 
       hostname=$(curl -kH "X-F5-Auth-Token: $token" https://$bigip/mgmt/tm/sys/global-settings 2>/dev/null | jq -r ".hostname")
