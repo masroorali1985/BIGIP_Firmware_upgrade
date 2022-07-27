@@ -24,9 +24,10 @@ Which version does it work with
 | v16 | TBT | TBT |
 
 # How to use
-Clone the following plabook or just copy and paste it.
+* clone the following plabook or just copy and paste it.
 * edit the host file in the inventory folder to include your F5
-* edit the partition_list file in the group_vars/lbv3 folder to include your F5 partitions for pre and post checks
+* edit the partition_list file in the group_vars/lb directory to include your F5 partitions for pre and post checks
+* edit the image file in the group_vars/lb directory to include the image for the upgrade
 * Make sure the image and image-checksum is available in rsync server
 
 # Execute playbook 
