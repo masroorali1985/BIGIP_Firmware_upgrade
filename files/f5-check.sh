@@ -5,42 +5,7 @@
 # Description ..: Shell script to provide overview information on BIG-IP (and BIG-IQ) and check system
 #                 health
 #
-# Author .......: Gregor Dicke, F5 Networks GmbH, M: +49 173 731 3884, E: g.dicke@f5.com
-#
-#
-# Version | Date       | Author          | Description
-# --------+------------+-----------------+--------------------------------------------------------------
-# 001     | 2021-03-16 | Gregor Dicke    | Initial version
-# 002     | 2021-03-17 | Gregor Dicke    | Added failover status time + ntp status heuristics
-# 003     | 2021-03-23 | Gregor Dicke    | Fixed S/N on BIG-IP device issue (Appliance || Chassis)
-#         |            |                 | Fixed Failover Status issue for Standby BIG-IP
-#         |            |                 | Fixed division by zero error when no VS and Pool exist
-# 004     | 2021-03-23 | Gregor Dicke    | Added DNS config check
-# 005     | 2021-03-25 | Gregor Dicke    | Allow MCP status "high-config-load-succeed"
-# 006     | 2021-04-15 | Gregor Dicke    | Added service start check (in addition to the existing
-#         |            |                 | restarts check) and re-added Secure Vault Master Key (f5mku)
-# 007     | 2021-04-20 | Gregor Dicke    | Modified service starts heuristic
-# 008     | 2021-04-20 | Gregor Dicke    | Fixed issue with detection of service starts
-# 009     | 2021-04-20 | Gregor Dicke    | Added file system checks and modified grep string for
-#         |            |                 | service starts
-# 010     | 2021-04-29 | Gregor Dicke    | Added hardware related checks for VIPRION and BIG-IP
-# 011     | 2021-05-05 | Gregor Dicke    | Added display of BIG-IP Management IP
-# 012     | 2021-05-06 | Gregor Dicke    | Added option to use remote execution via iControl REST API
-# 013     | 2021-05-17 | Gregor Dicke    | Fixed issue with Sync Status warning via iControl REST
-# 014     | 2021-08-23 | Gregor Dicke    | Added CRIT level notifications
-# 015     | 2021-08-26 | Gregor Dicke    | Modified notification for power supply not present to OK
-# 016     | 2021-09-02 | Gregor Dicke    | Added Cores + RAM info and BIG-IP platform type
-# 017     | 2021-11-30 | Gregor Dicke    | Added CPU and clock rate info
-# 018     | 2022-02-01 | Gregor Dicke    | Removed check of filesystems starting with "/var/apm/mount",
-#         |            |                 | as outlined in https://support.f5.com/csp/article/K55431021
-# 019     | 2022-02-17 | Gregor Dicke    | Added SSL Cert Check tests
-# 020     | 2022-04-11 | Gregor Dicke    | Added "base-config-load-succeed" as OK for mcp status
-# 021     | 2022-04-12 | Gregor Dicke    | Excluded filesystem "/usr" from df check due to K23607394
-#         |            |                 |
-#
-# ========================================================================================================
 
-# ----------------------------------------------------------------------------------------
 # Variables
 #
 version=021
